@@ -248,8 +248,9 @@ class VacancyMatcherFlow:
             interview_modality=lead_ctx["interview_modality"]
         )
 
-        # 4. Match Card si hay vacante o solicitud de evaluación
-        is_vacancy = bool(extracted_text) or any(w in sanitized_msg.lower() for w in ["vacante", "perfil", "busco", "oferta", "requisitos", "rol", "contratar"])
+        # 4. Match Card SOLO si hay un documento adjunto o si expresamente se consulta por una vacante formal
+        vacancy_regex = r"\b(vacante|oferta laboral|perfil requerido|job description|descripcion del puesto|requisitos del puesto|oferta de empleo)\b"
+        is_vacancy = bool(extracted_text) or bool(re.search(vacancy_regex, sanitized_msg.lower()))
         if is_vacancy:
             yield {"type": "step", "label": "Calculando matriz de compatibilidad con Diego Monroy..."}
             match_data = cls.calculate_match_profile(extracted_text or sanitized_msg)
@@ -301,14 +302,25 @@ class VacancyMatcherFlow:
             yield {"type": "match", "data": match_data.model_dump()}
 
         # 5. Generación de Enlaces de Agendamiento
-        cta = {
-            "calendarLink": SchedulerService.generate_google_calendar_link(),
-            "whatsappLink": SchedulerService.generate_whatsapp_link(),
-            "emailLink": SchedulerService.generate_email_link(),
-            "phone": SchedulerService.DEFAULT_PHONE,
-            "email": SchedulerService.DEFAULT_EMAIL,
-            "interviewModality": lead_ctx["interview_modality"]
-        }
+        # Mostramos botones de agendamiento solo cuando hay contexto de reunión, propuesta, vacante o desarrollo de proyecto
+        cta_triggers = [
+            "agendar", "cita", "reunion", "reunión", "entrevista", "contacto", 
+            "llamada", "whatsapp", "calendar", "hablar", "conversar", "oficinas", 
+            "vernos", "revisar", "analizar", "escenario", "solucion", "solución", 
+            "desarrollar", "proyecto", "propuesta", "costo", "presupuesto"
+        ]
+        should_show_cta = is_vacancy or any(t in sanitized_msg.lower() for t in cta_triggers)
+
+        cta = None
+        if should_show_cta:
+            cta = {
+                "calendarLink": SchedulerService.generate_google_calendar_link(),
+                "whatsappLink": SchedulerService.generate_whatsapp_link(),
+                "emailLink": SchedulerService.generate_email_link(),
+                "phone": SchedulerService.DEFAULT_PHONE,
+                "email": SchedulerService.DEFAULT_EMAIL,
+                "interviewModality": lead_ctx["interview_modality"]
+            }
 
         # 6. Generación de respuesta LLM en Streaming con memoria relacional
         yield {"type": "step", "label": "Redactando análisis ejecutivo..."}
