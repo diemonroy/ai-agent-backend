@@ -43,12 +43,11 @@ RUN groupadd -g 1001 appgroup && \
 # Copiar paquetes de Python instalados en el builder
 COPY --from=builder --chown=appuser:appgroup /root/.local /home/appuser/.local
 
-# Copiar código del backend y datos de marca
+# Copiar código del backend y herramientas
 COPY --chown=appuser:appgroup app /app/app
-COPY --chown=appuser:appgroup data /app/data
 COPY --chown=appuser:appgroup inspect_db.py /app/inspect_db.py
 
-# Crear directorio para base de datos y backups con permisos adecuados
+# Crear directorio para base de datos SQLite y backups con permisos adecuados
 RUN mkdir -p /app/data/backups && chown -R appuser:appgroup /app/data
 
 USER appuser
