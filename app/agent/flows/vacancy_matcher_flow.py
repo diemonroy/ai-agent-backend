@@ -310,11 +310,21 @@ class VacancyMatcherFlow:
             "interviewModality": lead_ctx["interview_modality"]
         }
 
-        # 6. Generación de respuesta LLM en Streaming
+        # 6. Generación de respuesta LLM en Streaming con memoria relacional
         yield {"type": "step", "label": "Redactando análisis ejecutivo..."}
+        
+        # Obtener historial previo para coherencia conversacional continua
+        history_msgs = chat_memory_service.get_conversation_history(session_id, limit=8)
+        # Excluir el mensaje recién guardado para que no se duplique en el prompt
+        if history_msgs and history_msgs[-1].get("content") == sanitized_msg:
+            previous_history = history_msgs[:-1]
+        else:
+            previous_history = history_msgs
+
         full_agent_response = ""
         async for chunk in llm_service.stream_chat_response(
             user_message=sanitized_msg,
+            history=previous_history,
             attachment_text=extracted_text if extracted_text else None
         ):
             full_agent_response += chunk

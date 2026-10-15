@@ -377,6 +377,47 @@ class ChatMemoryService:
         """Obtiene el reporte ejecutivo de inteligencia de mercado y atracción de la marca."""
         return self.db.get_market_intelligence_report()
 
+    def get_conversation_history(self, session_id: str, limit: int = 10) -> List[Dict[str, str]]:
+        """
+        Obtiene los turnos previos de conversación para alimentar la memoria del LLM.
+        Devuelve lista de dicts: [{'role': 'user'|'model', 'content': '...'}, ...]
+        """
+        # 1. Intentar memoria Memcache
+        if session_id in self._memcache and self._memcache[session_id].get("messages"):
+            msgs = self._memcache[session_id]["messages"][-limit:]
+            return [
+                {
+                    "role": "user" if m.get("sender") == "user" else "model",
+                    "content": m.get("content", "")
+                }
+                for m in msgs
+                if m.get("content")
+            ]
+
+        # 2. Consultar SQLite
+        try:
+            with self._get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT sender, content
+                    FROM messages
+                    WHERE session_id = ?
+                    ORDER BY id ASC;
+                """, (session_id,))
+                rows = cursor.fetchall()
+                recent = rows[-limit:] if rows else []
+                return [
+                    {
+                        "role": "user" if r["sender"] == "user" else "model",
+                        "content": r["content"]
+                    }
+                    for r in recent
+                    if r["content"]
+                ]
+        except Exception as e:
+            logger.error(f"Error consultando historial para LLM: {e}")
+            return []
+
 
 # Instancia Singleton
 chat_memory_service = ChatMemoryService()
