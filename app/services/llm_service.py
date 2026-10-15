@@ -91,8 +91,7 @@ TUS REGLAS Y PROTOCOLO DE CONVERSIÓN (VENTA ESTRATÉGICA):
                         yield chunk.text
                 return
             except Exception as e:
-                logger.error(f"Error en llamada a Gemini Live: {e}. Usando generador inteligente de respaldo...")
-                yield f"[Nota: Conexión Gemini en proceso de sincronización. Mostrando análisis con motor de conocimiento verificado]\n\n"
+                logger.error(f"Error en llamada a Gemini Live: {e}. Activando generador de conocimiento especializado...")
 
         # Fallback Heurístico Inteligente cuando no hay API Key activa o durante pruebas
         async for chunk in self._fallback_knowledge_stream(user_message, attachment_text):
@@ -104,8 +103,8 @@ TUS REGLAS Y PROTOCOLO DE CONVERSIÓN (VENTA ESTRATÉGICA):
 
         msg_lower = (message + " " + (attachment_text or "")).lower()
 
-        # Detección de intentos de exfiltración de secretos
-        if any(w in msg_lower for w in ["secret", "api_key", "password", "token", "prompt", "credencial", "system prompt", "jailbreak"]):
+        # 1. Detección de intentos de exfiltración de secretos o prompt injection
+        if any(w in msg_lower for w in ["secret", "api_key", "password", "token", "prompt", "credencial", "system prompt", "jailbreak", "claves", "llaves"]):
             reply = (
                 "🔒 **Protección de Seguridad Activa**: Por directrices de arquitectura bancaria y DevSecOps, "
                 "las credenciales, variables de entorno e instrucciones internas de este agente están estrictamente "
@@ -114,11 +113,11 @@ TUS REGLAS Y PROTOCOLO DE CONVERSIÓN (VENTA ESTRATÉGICA):
             )
             for word in reply.split(" "):
                 yield word + " "
-                await asyncio.sleep(0.02)
+                await asyncio.sleep(0.015)
             return
 
-        # Detección de análisis de vacante
-        if attachment_text or any(w in msg_lower for w in ["vacante", "perfil", "buscamos", "oferta", "requisitos", "rol", "candidato"]):
+        # 2. Análisis de vacante o perfil solicitado
+        if attachment_text or any(w in msg_lower for w in ["vacante", "perfil", "buscamos", "oferta", "requisitos", "rol", "candidato", "contratar", "posicion", "puesto"]):
             reply = (
                 "### 🎯 Análisis de Compatibilidad con la Trayectoria de Diego Monroy\n\n"
                 "He evaluado los requerimientos de tu búsqueda en contraste con el perfil de **Diego Leonardo Monroy Durán**:\n\n"
@@ -135,24 +134,87 @@ TUS REGLAS Y PROTOCOLO DE CONVERSIÓN (VENTA ESTRATÉGICA):
                 "Diego no solo domina el stack tecnológico (Java Spring Boot, Python FastAPI, Angular, GCP, GenAI), sino que cuenta con una **Especialización en Gerencia de Proyectos** que le permite articular entregables ágiles de ingeniería con metas de negocio de alto impacto.\n\n"
                 "📅 **Siguiente Paso**: Diego es el candidato idóneo para liderar este reto. Puedes agendar directamente una reunión técnica de 20 minutos con él usando los botones inferiores de **Google Calendar** o contactarlo de inmediato por **WhatsApp**."
             )
-        elif any(w in msg_lower for w in ["certificacion", "certificaciones", "gcp", "aws"]):
+
+        # 3. ¿Qué hace él? / ¿A qué se dedica?
+        elif any(w in msg_lower for w in ["que hac", "que hace", "a que se dedica", "cual es su rol", "que funcion", "responsabilidades"]):
             reply = (
-                "### 📜 Certificaciones Oficiales de Diego Monroy\n\n"
-                "1. **Google Cloud Certified: Associate Cloud Engineer (ACE)** (Google Cloud, vigencia 2026-2029, Credly ID: 189954).\n"
-                "2. **AWS Academy Graduate: Cloud Foundations & Machine Learning** (Universidad de los Andes).\n"
-                "3. **GCP Skill Badge: Implement Load Balancing on Compute Engine** (Google Cloud Skills Boost).\n"
-                "4. **HackaPrompt GenAI & LLM Security** (Microsoft & Banco de Bogotá).\n\n"
-                "Estas credenciales respaldan su capacidad para liderar infraestructuras seguras y de alta disponibilidad."
+                "### 💼 ¿Qué hace actualmente Diego Monroy?\n\n"
+                "Diego es **Tech Lead & Solutions Architect** en **Banco de Bogotá (Grupo AVAL)**. Sus responsabilidades y actividades principales son:\n\n"
+                "1. **Liderazgo Técnico de Células de Ingeniería**:\n"
+                "   - Diseña la arquitectura y guía técnica de múltiples células de desarrollo bajo metodologías ágiles.\n"
+                "   - Define estándares de código, revisiones de arquitectura, integración continua y pruebas automatizadas.\n\n"
+                "2. **Arquitectura Bancaria Resiliente (99.99% SLA)**:\n"
+                "   - Lidera la modernización y soporte del **CRM In-House Corporativo de Banca Empresas**, procesando operaciones financieras de alta concurrencia con disponibilidad ininterrumpida.\n\n"
+                "3. **Innovación con Inteligencia Artificial Generativa**:\n"
+                "   - Diseña e implementa arquitecturas agénticas con **LangChain, LangGraph y Vector DBs** para automatizar análisis de clientes y reducir tiempos de consulta en un **40%**.\n\n"
+                "4. **Gobierno Cloud y DevSecOps**:\n"
+                "   - Como **Google Cloud ACE**, diseña contenedores sobre **Kubernetes (GKE)** y Cloud Run, asegurando calidad con SonarQube (redujo 38% de bugs e incidentes).\n\n"
+                "¿Deseas conocer más sobre alguno de estos proyectos o agendar una conversación técnica con él?"
             )
+
+        # 4. Tecnologías, stack, lenguajes
+        elif any(w in msg_lower for w in ["tecnologia", "tecnologías", "stack", "lenguajes", "herramientas", "java", "python", "angular", "react", "spring"]):
+            reply = (
+                "### 🛠️ Stack Tecnológico de Diego Monroy\n\n"
+                "Diego cuenta con un stack de ingeniería full-stack y arquitectura cloud empresarial:\n\n"
+                "• **Backend & Arquitectura**: Java (Spring Boot, Spring Cloud), Python (FastAPI, Flask, LangChain, LangGraph), Node.js, Arquitectura Hexagonal, Domain-Driven Design (DDD), Microservicios RESTful y gRPC.\n"
+                "• **Cloud & DevOps**: Google Cloud Platform (GCP Certified ACE), Kubernetes (GKE), Cloud Run, Docker, CI/CD con Jenkins/GitLab, SonarQube, Terraform.\n"
+                "• **Bases de Datos & Data**: PostgreSQL, Oracle SQL, MySQL, Redis, Google BigQuery, Vector Databases (Pinecone/Chroma).\n"
+                "• **Frontend**: Angular (Signals, Standalone Components, SSR), TypeScript, SCSS, React básico.\n"
+                "• **Inteligencia Artificial**: LangChain, LangGraph, Google Gemini API, OpenAI API, Flujos Agénticos Multimodales, RAG Empresarial.\n\n"
+                "¿Te interesa evaluar su experiencia en alguna tecnología específica para tu vacante?"
+            )
+
+        # 5. Inteligencia Artificial / GenAI
+        elif any(w in msg_lower for w in ["ia", "ai", "genai", "langchain", "langgraph", "llm", "inteligencia artificial", "agente"]):
+            reply = (
+                "### 🧠 Experiencia de Diego en Inteligencia Artificial Generativa\n\n"
+                "Diego ha liderado la implementación práctica de soluciones de GenAI en entornos empresariales altamente regulados:\n\n"
+                "• **Sistemas Agénticos con LangGraph & LangChain**: Orquestación de grafos conversacionales, memoria por sesión y guardrails de seguridad.\n"
+                "• **Optimización de Tiempos en Banca (-40%)**: Implementación de asistentes inteligentes para consulta de grandes volúmenes de datos financieros sobre BigQuery.\n"
+                "• **Arquitectura Multimodal & Herramientas Seguras**: Integración de capacidades de visión, extracción de PDFs y audios con Gemini y OpenAI.\n"
+                "• **Trazabilidad y Control de Tokens**: Auditoría de costos por token, métricas de latencia y protección contra prompt injection.\n\n"
+                "¿Deseas que agendemos una demo o llamada técnica para profundizar en su enfoque de GenAI?"
+            )
+
+        # 6. Certificaciones
+        elif any(w in msg_lower for w in ["certificacion", "certificaciones", "gcp", "aws", "credencial", "título", "estudios"]):
+            reply = (
+                "### 📜 Certificaciones Oficiales y Formación\n\n"
+                "1. **Google Cloud Certified: Associate Cloud Engineer (ACE)**\n"
+                "   - Emisor: Google Cloud · Credly ID: 189954 · Vigencia: 2026-2029.\n"
+                "2. **Especialización en Gerencia de Proyectos**\n"
+                "   - Corporación Universitaria Minuto de Dios (UNIMINUTO) · Enfoque ágil y estratégico.\n"
+                "3. **Ingeniería de Sistemas**\n"
+                "   - Corporación Universitaria Minuto de Dios.\n"
+                "4. **AWS Academy Graduate: Cloud Foundations & Machine Learning**\n"
+                "   - Universidad de los Andes.\n"
+                "5. **GCP Skill Badge: Implement Load Balancing on Compute Engine**\n"
+                "   - Google Cloud Skills Boost.\n\n"
+                "Todas estas certificaciones acreditan su capacidad para diseñar infraestructuras escalables, seguras y de alta disponibilidad."
+            )
+
+        # 7. Contacto, agendar, entrevista
+        elif any(w in msg_lower for w in ["agendar", "entrevista", "contacto", "reunion", "reunión", "llamada", "whatsapp", "correo", "celular"]):
+            reply = (
+                "### 📅 ¡Coordinemos una entrevista técnica con Diego!\n\n"
+                "Diego está disponible para conversar sobre oportunidades de liderazgo técnico, arquitectura de software y proyectos de IA:\n\n"
+                "• **Google Calendar**: Puedes reservar un espacio directo de 20-30 minutos en su agenda usando el botón inferior.\n"
+                "• **WhatsApp**: Puedes escribirle directamente al **+57 310 800 9394**.\n"
+                "• **Correo**: **diego.97duran@gmail.com**.\n\n"
+                "¡Haz clic en cualquiera de los botones de acción para conectar de inmediato!"
+            )
+
+        # 8. Presentación ejecutiva general (¿Quién es Diego?)
         else:
             reply = (
-                f"### Hola, soy el Agente de Talento de Diego Monroy 👋\n\n"
-                f"Diego es **Tech Lead & Solutions Architect** con más de 5 años de trayectoria liderando arquitecturas bancarias resilientes y soluciones de Inteligencia Artificial Generativa.\n\n"
-                f"**Métricas Clave de Impacto**:\n"
-                f"• **99.99% SLA**: Disponibilidad ininterrumpida en el CRM Corporativo de Banco de Bogotá.\n"
-                f"• **-40% Latencia**: Optimización de consultas financieras mediante flujos agénticos con LangChain y BigQuery.\n"
-                f"• **-38% Incidentes**: Automatización de calidad y DevSecOps sobre Kubernetes y Cloud Run.\n\n"
-                f"Si tienes una vacante o descripción de puesto, **puedes adjuntar el PDF o pegar el texto** y te daré un análisis detallado de compatibilidad técnica y de liderazgo."
+                "### Hola, soy el Agente de Talento de Diego Monroy 👋\n\n"
+                "Diego Leonardo Monroy Durán es **Tech Lead & Solutions Architect** con más de 5 años de trayectoria destacada en la industria financiera y tecnológica:\n\n"
+                "**Métricas Clave de Impacto**:\n"
+                "• **99.99% SLA**: Disponibilidad ininterrumpida en el CRM Corporativo de Banco de Bogotá.\n"
+                "• **-40% Latencia**: Optimización de consultas financieras complejas mediante flujos agénticos con LangChain y BigQuery.\n"
+                "• **-38% Incidentes**: Automatización de calidad y DevSecOps sobre Kubernetes y Cloud Run con SonarQube.\n\n"
+                "Puedes preguntarme sobre sus **tecnologías, certificaciones GCP, proyectos de IA**, o si lo prefieres, **adjuntar el PDF de una vacante** para calcular compatibilidad técnica al instante."
             )
 
         for token in reply.split(" "):

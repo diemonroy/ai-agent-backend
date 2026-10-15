@@ -69,10 +69,11 @@ class SecretsManager:
 
         # 3. Fallback a Variables de Entorno
         if not val:
-            env_key = fallback_env_var or secret_name
-            val = os.getenv(env_key)
+            val = os.getenv(secret_name)
+            if not val and fallback_env_var:
+                val = os.getenv(fallback_env_var)
             if val:
-                logger.info(f"Secreto '{secret_name}' resuelto desde variables de entorno ({env_key}): {mask_secret(val)}")
+                logger.info(f"Secreto '{secret_name}' resuelto desde variables de entorno: {mask_secret(val)}")
 
         if val:
             self._cached_secrets[secret_name] = val
