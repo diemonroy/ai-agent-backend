@@ -18,3 +18,48 @@ suggested_queries:
   - "¿Cómo garantiza Diego alta disponibilidad (SLA 99.99%) y seguridad bancaria?"
   - "Tengo esta vacante de empleo (adjunta o pega el texto), ¿qué porcentaje de compatibilidad tiene Diego?"
   - "Quiero agendar una entrevista técnica con Diego esta semana."
+
+datasets:
+  sessions_table:
+    type: "sql.SQLTableDataSet"
+    filepath: "data/conversations.db"
+    table_name: "sessions"
+    description: "Almacenamiento relacional de sesiones, match scores, reclutadores, empresas y modalidad (presencial/virtual)."
+    columns:
+      session_id: "TEXT PRIMARY KEY"
+      created_at: "TEXT NOT NULL"
+      updated_at: "TEXT NOT NULL"
+      client_ip: "TEXT"
+      role_detected: "TEXT"
+      match_score: "INTEGER DEFAULT 0"
+      conversion_type: "TEXT"
+      status: "TEXT DEFAULT 'active'"
+      recruiter_name: "TEXT"
+      company_name: "TEXT"
+      liked_aspect: "TEXT"
+      interview_modality: "TEXT DEFAULT 'virtual'"
+
+  messages_table:
+    type: "sql.SQLTableDataSet"
+    filepath: "data/conversations.db"
+    table_name: "messages"
+    description: "Historial cronológico de mensajes entre el reclutador y el agente Diego."
+    columns:
+      id: "INTEGER PRIMARY KEY AUTOINCREMENT"
+      session_id: "TEXT NOT NULL (FK -> sessions.session_id)"
+      sender: "TEXT NOT NULL ('user' | 'diego')"
+      content: "TEXT NOT NULL"
+      attachment_name: "TEXT"
+      timestamp: "TEXT NOT NULL"
+
+  conversion_events_table:
+    type: "sql.SQLTableDataSet"
+    filepath: "data/conversations.db"
+    table_name: "conversion_events"
+    description: "Eventos de cierre hacia Google Calendar, WhatsApp y Email."
+    columns:
+      id: "INTEGER PRIMARY KEY AUTOINCREMENT"
+      session_id: "TEXT NOT NULL (FK -> sessions.session_id)"
+      event_type: "TEXT NOT NULL ('calendar' | 'whatsapp' | 'email')"
+      timestamp: "TEXT NOT NULL"
+      metadata: "TEXT (JSON)"

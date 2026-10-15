@@ -1,0 +1,51 @@
+# ==============================================================================
+# DIEGO MONROY — GOOGLE CLOUD BUILD PIPELINE (ENTERPRISE CI/CD)
+# Target Project: dm-portfolio-511707
+# ==============================================================================
+
+steps:
+  # 1. Compilar imagen de Docker con caché en Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/diego-portfolio-repo/diego-ai-agent:$COMMIT_SHA'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/diego-portfolio-repo/diego-ai-agent:latest'
+      - '.'
+
+  # 2. Publicar imagen en Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/diego-portfolio-repo/diego-ai-agent:$COMMIT_SHA'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/diego-portfolio-repo/diego-ai-agent:latest'
+
+  # 3. Desplegar en Google Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'diego-ai-agent'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/diego-portfolio-repo/diego-ai-agent:$COMMIT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--memory=512Mi'
+      - '--cpu=1'
+      - '--min-instances=0'
+      - '--max-instances=5'
+      - '--set-env-vars=ENVIRONMENT=production'
+      - '--set-secrets=GOOGLE_GEMINI_KEY=GOOGLE_GEMINI_KEY:latest'
+
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/diego-portfolio-repo/diego-ai-agent:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/diego-portfolio-repo/diego-ai-agent:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

@@ -30,3 +30,23 @@ closing_funnel:
   email_subject: "Oportunidad Profesional — Contacto vía Agente IA"
   meeting_duration_minutes: 30
   linkedin_url: "https://linkedin.com/in/diemonroy"
+
+database:
+  engine: "sqlite" # sqlite | postgresql
+  name: "conversations_relational_db"
+  path: "data/conversations.db"
+  journal_mode: "WAL" # Write-Ahead Logging para lecturas y escrituras concurrentes
+  synchronous: "NORMAL"
+  timeout_seconds: 30
+  auto_migrate: true
+  backup_dir: "data/backups"
+  tables:
+    sessions:
+      description: "Sesiones de chat con métricas de afinidad, datos del reclutador y modalidad"
+      primary_key: "session_id"
+    messages:
+      description: "Registro cronológico de mensajes entre el reclutador y el agente Diego"
+      foreign_key: "session_id"
+    conversion_events:
+      description: "Registro de conversiones (Google Calendar, WhatsApp, Correo)"
+      foreign_key: "session_id"

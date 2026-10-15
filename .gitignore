@@ -32,6 +32,10 @@ client_secret*.json
 *.log
 *.sqlite
 *.sqlite3
+*.db
+*.db-wal
+*.db-shm
+data/
 .coverage
 htmlcov/
 .pytest_cache/
