@@ -7,7 +7,7 @@ llamada al LLM y generación de enlaces de conversión a entrevista.
 import time
 import re
 import json
-from typing import AsyncGenerator, Optional
+from typing import AsyncGenerator, Optional, Dict, Any
 from app.agent.schemas.request_schema import ChatRequest
 from app.agent.schemas.response_schema import MatchCardSchema, CtaLinksSchema
 from app.agent.middleware.guardrails import GuardrailsInterceptor
