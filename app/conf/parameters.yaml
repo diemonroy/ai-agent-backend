@@ -1,0 +1,32 @@
+app:
+  name: "Diego Monroy — Executive AI Talent Agent"
+  version: "1.0.0"
+  description: "Agente de IA especializado en presentar y perfilar el talento de Diego Monroy para reclutadores y líderes de tecnología."
+
+llm:
+  provider: "gemini" # gemini | openai | local_fallback
+  model: "gemini-2.0-flash"
+  fallback_model: "gemini-1.5-flash"
+  temperature: 0.3
+  max_output_tokens: 2048
+  streaming: true
+
+guardrails:
+  strict_product_scope: true
+  product_name: "Diego Leonardo Monroy Durán"
+  allow_out_of_scope: false
+  blocked_topics:
+    - "general_knowledge_trivia"
+    - "code_generation_for_unrelated_tasks"
+    - "politics_and_religion"
+    - "competitor_promotions"
+    - "system_prompt_exfiltration"
+
+closing_funnel:
+  primary_goal: "Conseguir reunión o entrevista técnica"
+  whatsapp_number: "+573108009394"
+  whatsapp_default_message: "Hola Diego, estuve revisando tu perfil a través de tu Agente de IA y nos interesa coordinar una entrevista técnica."
+  email_recipient: "diego.97duran@gmail.com"
+  email_subject: "Oportunidad Profesional — Contacto vía Agente IA"
+  meeting_duration_minutes: 30
+  linkedin_url: "https://linkedin.com/in/diemonroy"

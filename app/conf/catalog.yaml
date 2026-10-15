@@ -1,0 +1,20 @@
+capabilities:
+  - id: "vacancy_analysis"
+    name: "Análisis y Compatibilidad de Vacantes"
+    description: "Analiza perfiles de empleo, descripciones en texto, PDF o capturas de pantalla, calculando porcentaje de afinidad con la trayectoria de Diego Monroy."
+  - id: "metric_proof_points"
+    name: "Evidencias de Impacto y Métricas"
+    description: "Proporciona métricas verificables: 99.99% SLA bancario, reducción de latencia en 40% con GenAI, reducción de 38% en incidentes en producción."
+  - id: "interview_scheduling"
+    name: "Agendamiento Asertivo de Entrevistas"
+    description: "Genera enlaces directos a Google Calendar, WhatsApp con mensaje pre-estructurado y correo electrónico para cerrar reuniones de inmediato."
+  - id: "multimodal_processing"
+    name: "Entrada Multimodal"
+    description: "Acepta PDFs de ofertas laborales, capturas de pantalla de LinkedIn y dictado de voz."
+
+suggested_queries:
+  - "¿Por qué Diego es el candidato idóneo para Tech Lead / Arquitecto de Software?"
+  - "¿Qué experiencia tiene Diego en Inteligencia Artificial Generativa y LangGraph?"
+  - "¿Cómo garantiza Diego alta disponibilidad (SLA 99.99%) y seguridad bancaria?"
+  - "Tengo esta vacante de empleo (adjunta o pega el texto), ¿qué porcentaje de compatibilidad tiene Diego?"
+  - "Quiero agendar una entrevista técnica con Diego esta semana."

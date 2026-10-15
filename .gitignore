@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Environments & Virtual Envs
+.env
+.env.*
+!.env.example
+venv/
+.venv/
+env/
+ENV/
+
+# Secrets, Keys, Certificates & Service Accounts
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+*.json_secret
+credentials*.json
+service-account*.json
+service_account*.json
+token*.json
+client_secret*.json
+
+# Logs & Databases
+*.log
+*.sqlite
+*.sqlite3
+.coverage
+htmlcov/
+.pytest_cache/
+
+# IDE & OS
+.DS_Store
+.vscode/
+.idea/
