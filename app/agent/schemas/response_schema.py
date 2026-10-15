@@ -3,7 +3,7 @@ Pydantic Schemas for Structured Responses (v2)
 Inspirado en response_schema.py de bbog-bebd-gcm-ml
 """
 
-from typing import Optional
+from typing import Optional, Any
 from pydantic import BaseModel, Field
 
 
@@ -23,12 +23,25 @@ class CtaLinksSchema(BaseModel):
     email: str = "diego.97duran@gmail.com"
 
 
+class VisualResourceSchema(BaseModel):
+    type: str = "project_card"
+    projectId: str
+    title: str
+    category: str
+    badge: str
+    image: str
+    metric: Optional[str] = None
+    flowSteps: list[dict] = Field(default_factory=list)
+    ctaText: str = "Ver Arquitectura del Proyecto"
+
+
 class ChatResponseSchema(BaseModel):
     success: bool = True
     response: str = Field(..., description="Respuesta textual en Markdown enriquecido")
     sessionId: str = Field(..., description="ID de sesión")
     match: Optional[MatchCardSchema] = None
-    cta: CtaLinksSchema
+    cta: Optional[CtaLinksSchema] = None
+    visualResource: Optional[VisualResourceSchema] = None
     toolsUsed: list[str] = Field(default_factory=list)
     processingTimeMs: int = Field(..., description="Tiempo de procesamiento en milisegundos")
     error: Optional[str] = None

@@ -149,6 +149,8 @@ async def chat_sync_endpoint(request: ChatRequest):
     start_time = time.time()
     accumulated_text = []
     match_card = None
+    visual_resource = None
+    cta_data = None
     session_id = request.sessionId or f"sess_{int(start_time * 1000)}"
 
     async for event in VacancyMatcherFlow.run(request):
@@ -156,16 +158,23 @@ async def chat_sync_endpoint(request: ChatRequest):
             accumulated_text.append(event.get("delta", ""))
         elif event.get("type") == "match":
             match_card = event.get("data")
+        elif event.get("type") == "done":
+            visual_resource = event.get("visualResource")
+            cta_data = event.get("cta")
         elif event.get("type") == "start":
             session_id = event.get("sessionId", session_id)
 
     processing_time = int((time.time() - start_time) * 1000)
 
-    cta = CtaLinksSchema(
-        calendarLink=SchedulerService.generate_google_calendar_link(),
-        whatsappLink=SchedulerService.generate_whatsapp_link(),
-        emailLink=SchedulerService.generate_email_link()
-    )
+    cta = None
+    if cta_data:
+        cta = CtaLinksSchema(
+            calendarLink=cta_data.get("calendarLink", SchedulerService.generate_google_calendar_link()),
+            whatsappLink=cta_data.get("whatsappLink", SchedulerService.generate_whatsapp_link()),
+            emailLink=cta_data.get("emailLink", SchedulerService.generate_email_link()),
+            phone=cta_data.get("phone", SchedulerService.DEFAULT_PHONE),
+            email=cta_data.get("email", SchedulerService.DEFAULT_EMAIL)
+        )
 
     return ChatResponseSchema(
         success=True,
@@ -173,6 +182,7 @@ async def chat_sync_endpoint(request: ChatRequest):
         sessionId=session_id,
         match=match_card,
         cta=cta,
+        visualResource=visual_resource,
         toolsUsed=["vacancy_analyzer", "diego_knowledge_base", "scheduler_service"],
         processingTimeMs=processing_time
     )

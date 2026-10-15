@@ -349,10 +349,79 @@ class VacancyMatcherFlow:
             content=full_agent_response
         )
 
-        # 7. Evento de finalización
+        # Determinar si corresponde un recurso visual enriquecido de arquitectura
+        visual_resource = cls.determine_visual_resource(
+            sanitized_msg + " " + (extracted_text or "") + " " + full_agent_response
+        )
+
+        # 7. Evento de finalización con recursos audiovisuales
         yield {
             "type": "done",
             "sessionId": session_id,
             "cta": cta,
+            "visualResource": visual_resource,
             "leadContext": lead_ctx
         }
+
+    @classmethod
+    def determine_visual_resource(cls, context_text: str) -> Optional[Dict[str, Any]]:
+        txt = context_text.lower()
+
+        # 1. IA, Agentes, LangChain, Fuerza Comercial, Ventas automatizadas
+        if any(k in txt for k in ["agente", "ia", "genai", "langchain", "langgraph", "comercial", "venta", "ventas", "automatiz"]):
+            return {
+                "type": "project_card",
+                "projectId": "ai-agents",
+                "title": "Ecosistema de Agentes y Grafos con LangChain",
+                "category": "Inteligencia Artificial · GenAI",
+                "badge": "Arquitectura de Referencia",
+                "image": "assets/cover-ai.png",
+                "metric": "-40% tiempos de consulta · Reducción del 92% inconsistencias",
+                "flowSteps": [
+                    {"step": "Entrada", "label": "Datos CRM / Ventas"},
+                    {"step": "Grafo", "label": "Orquestador LangGraph"},
+                    {"step": "Contexto", "label": "RAG Vectorial BigQuery"},
+                    {"step": "Acción", "label": "Estrategia de Venta"}
+                ],
+                "ctaText": "Ver Arquitectura del Proyecto"
+            }
+
+        # 2. Cloud, DevOps, Kubernetes, GCP, AWS
+        elif any(k in txt for k in ["cloud", "gcp", "aws", "kubernetes", "gke", "devops", "infraestructura", "docker"]):
+            return {
+                "type": "project_card",
+                "projectId": "multicloud",
+                "title": "Infraestructura Multi-Cloud y DevSecOps",
+                "category": "Cloud & DevSecOps · Google Cloud ACE",
+                "badge": "Google Cloud Certified ACE #189954",
+                "image": "assets/cover-cloud.png",
+                "metric": "SLA 99.99% · Despliegues Zero-Downtime en GKE",
+                "flowSteps": [
+                    {"step": "Código", "label": "Git & SonarQube"},
+                    {"step": "Deploy", "label": "Terraform & Docker"},
+                    {"step": "Runtime", "label": "Kubernetes GKE"},
+                    {"step": "Control", "label": "Observabilidad p99"}
+                ],
+                "ctaText": "Ver Arquitectura del Proyecto"
+            }
+
+        # 3. CRM, Liderazgo, Banca, Transaccional
+        elif any(k in txt for k in ["crm", "banca", "banco", "liderazgo", "tech lead", "arquitectura", "hexagonal", "sla"]):
+            return {
+                "type": "project_card",
+                "projectId": "crm-banca",
+                "title": "CRM In-House Banca Empresas",
+                "category": "Banca Empresas · Core CRM",
+                "badge": "SLA Bancario 99.99%",
+                "image": "assets/cover-crm.png",
+                "metric": "+38% productividad comercial · Millones de transacciones",
+                "flowSteps": [
+                    {"step": "Front", "label": "Angular Standalone"},
+                    {"step": "Core", "label": "Clean Architecture"},
+                    {"step": "Nube", "label": "GCP Cloud Run / GKE"},
+                    {"step": "Seguridad", "label": "OAuth2 / OIDC"}
+                ],
+                "ctaText": "Ver Arquitectura del Proyecto"
+            }
+
+        return None
